@@ -3,7 +3,6 @@ const dotenv = require('dotenv');
 const { EOL, networkInterfaces } = require('os');
 const { readFileSync } = require('fs');
 const { writeFile } = require('fs/promises');
-const { promisify } = require('util');
 const fetch = require('node-fetch'); // not necessary in v18. fetch will be in the default API
 const env = dotenv.config();
 
@@ -22,11 +21,10 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const sendMail = promisify(transporter.sendMail);
-
 const mailOptions = {
     from: env.parsed.EMAIL_ADDRESS,
     to: env.parsed.TO,
+    bcc: env.parsed.BCC,
     subject: env.parsed.EMAIL_SUBJECT,
 };
 
@@ -66,19 +64,9 @@ async function iteration() {
             lastIp = webserviceIP;
           }
         });
-        /*try {
-            console.log('here');
-            console.log((await sendMail(mailOptions)));
-            console.log('there');
-            await writeFile(env.parsed.IP_FILE_DESTINATION, JSON.stringify({'ip': webserviceIP}));
-        } catch(e) {
-            console.log('exception :(');
-            
-        }
-        lastIp = webserviceIP;*/
     }
 }
 
-// since the first execution of meme would be after inMinutes minutes and we would like to send the ip immediately we have to call it once
+// since the first execution of iteration would be after inMinutes minutes and we would like to send the ip immediately we have to call it once
 iteration();
 setInterval(iteration, INTERVAL * 60 * 1000);
