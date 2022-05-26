@@ -1,0 +1,10 @@
+[Unit]
+Description=A Daemon for sending the public IP address of this network and local network configs to a email address
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/bin/sh -c "cd /home/youruser/ipsender/ && node sendEmail.js"
+
+[Install]
+WantedBy=multi-user.target
